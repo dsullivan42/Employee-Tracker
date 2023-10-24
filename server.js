@@ -63,6 +63,36 @@ const startScreenPrompt = () => {
     })
 }
 
+const viewDepartments = () => {
+    db.query('SELECT * FROM department', (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        console.table(result);
+        startScreenPrompt();
+    })
+}
+
+const viewRoles = () => {
+    db.query('SELECT * FROM role', (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        console.table(result);
+        startScreenPrompt();
+    })
+}
+
+const viewEmployees = () => {
+    db.query('SELECT * FROM employee', (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        console.table(result);
+        startScreenPrompt();
+    })
+}
+
 const addDepartment = () => {
     return inquirer.prompt({
         type:'input',
@@ -94,10 +124,10 @@ const addRole = () => {
     {
         type:'input',
         message:"What department does this role belong to?",
-        name:'roleDepartmentID'
+        name:'roleDepartment'
     }
     ]).then ((answers) => {
-        db.query(`INSERT INTO role (title) VALUES ('${answers.roleName}')`, (err, result) => {
+        db.query("INSERT INTO role (title, salary, department) VALUES (?, ?, ?)", [answers.roleName, answers.roleSalary, answers.roleDepartment], (err, result) => {
             if (err) {
                 console.log(err);
             }
@@ -108,16 +138,56 @@ const addRole = () => {
 }
 
 const addEmployee = () => {
-    return inquirer.prompt({
+    return inquirer.prompt([
+    {
         type:'input',
-        message:"What's the name of the employee you'd like to add?",
-        name:'employeeName'
-    }).then ((answers) => {
-        db.query(`INSERT INTO employee (employee_name) VALUES ('${answers.employeeName}')`, (err, result) => {
+        message:"What's the first name of the employee you'd like to add?",
+        name:'employeeFirstName'
+    },
+    {
+        type:'input',
+        message:"What's the last name of the employee you'd like to add?",
+        name:'employeeLastName'
+    },
+    {
+        type:'input',
+        message:"What's the role of the employee you'd like to add?",
+        name:'employeeRole'
+    },
+    {
+        type:'input',
+        message:"Who is the manager of the employee you'd like to add?",
+        name:'employeeManager'
+    }
+    ]).then ((answers) => {
+        db.query("INSERT INTO employee (firstName, lastName, employeeRole, employeeManager) VALUES (?,?,?,?)", [answers.employeeFirstName, answers.employeeLastName, employeeRole, employeeManger] , (err, result) => {
             if (err) {
                 console.log(err);
             }
             console.log('Employee added!');
+            startScreenPrompt();
+        })
+    })
+}
+
+const updateEmployeeRole = () => {
+    return inquirer.prompt([
+        {
+            type:'input',
+            message:'what is the name of the employee you would like to update?',
+            name:'employeeName'
+        },
+        {
+            type:'input',
+            message:'what is the new role of the employee?',
+            name:'employeeRole'
+        }
+    ]).then ((answers) => {
+        db.query("UPDATE employee SET role = ? WHERE firstName = ?", [answers.employeeRole, answers.employeeName], (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log('Employee role updated!');
             startScreenPrompt();
         })
     })
