@@ -62,3 +62,63 @@ const startScreenPrompt = () => {
         }
     })
 }
+
+const addDepartment = () => {
+    return inquirer.prompt({
+        type:'input',
+        message:"What's the name of the department you'd like to add?",
+        name:'departmentName'
+    }).then ((answers) => {
+        db.query(`INSERT INTO department (name) VALUES ('${answers.departmentName}')`, (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log('Department added!');
+            startScreenPrompt();
+        })
+    })
+}
+
+const addRole = () => {
+    return inquirer.prompt([
+    {
+        type:'input',
+        message:"What's the name of the role you'd like to add?",
+        name:'roleName'
+    },
+    {
+        type:'input',
+        message:"What's the salary of the role you'd like to add?",
+        name:'roleSalary'
+    },
+    {
+        type:'input',
+        message:"What department does this role belong to?",
+        name:'roleDepartmentID'
+    }
+    ]).then ((answers) => {
+        db.query(`INSERT INTO role (title) VALUES ('${answers.roleName}')`, (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log('Role added!');
+            startScreenPrompt();
+        })
+    })
+}
+
+const addEmployee = () => {
+    return inquirer.prompt({
+        type:'input',
+        message:"What's the name of the employee you'd like to add?",
+        name:'employeeName'
+    }).then ((answers) => {
+        db.query(`INSERT INTO employee (employee_name) VALUES ('${answers.employeeName}')`, (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log('Employee added!');
+            startScreenPrompt();
+        })
+    })
+}
