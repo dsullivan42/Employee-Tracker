@@ -1,19 +1,24 @@
+//dependencies
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const fs = require('fs');
-
-const PORT = process.env.PORT || 3001;
-
+// const PORT = process.env.PORT || 3001; // port for server, I commented it out because I'm having issues connecting to the server, receiving the error, "unknown database 'employee_tracker'"
+// code to create connection to database
 const db = mysql.createConnection(
     {
         host:'localhost',
+        port: 3306,
         user:'root',
         password:'Hiholetsgo97!',
-        database:'employee_db'
-    },
-    console.log('Connected to the employee_db database.')
-);
-
+        database:'employee_tracker'
+    });
+//code to connect to database and start the application
+db.connect(err => {
+    if (err) throw err;
+    console.log('Connected to the employee_tracker database.');
+    startScreenPrompt();
+});
+//function for the start screen prompt
 const startScreenPrompt = () => {
     return inquirer.prompt([
         {
@@ -32,6 +37,7 @@ const startScreenPrompt = () => {
             ]
         }
     ])
+    //switch statement to determine what function to run based on the user's choice
     .then((answers) => {
         
         switch(answers.action) {
@@ -62,7 +68,8 @@ const startScreenPrompt = () => {
         }
     })
 }
-
+//functions for each of the choices in the start screen prompt
+//function to view all departments
 const viewDepartments = () => {
     db.query('SELECT * FROM department', (err, result) => {
         if (err) {
@@ -72,7 +79,7 @@ const viewDepartments = () => {
         startScreenPrompt();
     })
 }
-
+//function to view all roles
 const viewRoles = () => {
     db.query('SELECT * FROM role', (err, result) => {
         if (err) {
@@ -82,7 +89,7 @@ const viewRoles = () => {
         startScreenPrompt();
     })
 }
-
+//function to view all employees
 const viewEmployees = () => {
     db.query('SELECT * FROM employee', (err, result) => {
         if (err) {
@@ -92,7 +99,7 @@ const viewEmployees = () => {
         startScreenPrompt();
     })
 }
-
+//function to add a department to the departments table
 const addDepartment = () => {
     return inquirer.prompt({
         type:'input',
@@ -108,7 +115,7 @@ const addDepartment = () => {
         })
     })
 }
-
+//function to add a role to the roles table
 const addRole = () => {
     return inquirer.prompt([
     {
@@ -136,7 +143,7 @@ const addRole = () => {
         })
     })
 }
-
+//function to add an employee to the employees table
 const addEmployee = () => {
     return inquirer.prompt([
     {
@@ -169,7 +176,7 @@ const addEmployee = () => {
         })
     })
 }
-
+//function to update an employee's role
 const updateEmployeeRole = () => {
     return inquirer.prompt([
         {
